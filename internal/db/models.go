@@ -6,7 +6,7 @@ package repository
 
 import (
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/wilbyang/law-docs/models"
+	"github.com/wilbyang/law-docs/internal/models"
 )
 
 type Document struct {
@@ -16,7 +16,7 @@ type Document struct {
 	DocSize   int32
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
-	Meta      models.Credentials
+	Meta      models.Meta
 	Status    pgtype.Text
 	AuthorID  pgtype.Int4
 }

@@ -1,3 +1,12 @@
+create table if not exists users (
+    id serial primary key,
+    name text not null,
+    email text not null,
+    password text not null,
+    created_at timestamp default current_timestamp,
+    updated_at timestamp default current_timestamp
+);
+
 create table if not exists documents (
     id serial primary key,
     title text not null,
@@ -10,14 +19,6 @@ create table if not exists documents (
     author_id integer references users(id)
 );
 
-create table if not exists users (
-    id serial primary key,
-    name text not null,
-    email text not null,
-    password text not null,
-    created_at timestamp default current_timestamp,
-    updated_at timestamp default current_timestamp
-);
 
 
     

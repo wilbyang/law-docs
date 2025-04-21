@@ -9,7 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/wilbyang/law-docs/models"
+	"github.com/wilbyang/law-docs/internal/models"
 )
 
 const createDocument = `-- name: CreateDocument :one
@@ -36,7 +36,7 @@ type CreateDocumentParams struct {
 	DocSize   int32
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
-	Meta      models.Credentials
+	Meta      models.Meta
 }
 
 func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) (Document, error) {

@@ -11,5 +11,5 @@ sql:
         overrides:
           - column: "documents.meta"
             go_type:
-              import: "github.com/wilbyang/law-docs/models"
-              type: "Credentials"
+              import: "github.com/wilbyang/law-docs/internal/models"
+              type: "Meta"
