@@ -1,0 +1,15 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "query.sql"
+    schema: "schema.sql"
+    gen:
+      go:
+        package: "repository"
+        out: "internal/db"
+        sql_package: "pgx/v5"
+        overrides:
+          - column: "documents.meta"
+            go_type:
+              import: "github.com/wilbyang/law-docs/models"
+              type: "Credentials"
