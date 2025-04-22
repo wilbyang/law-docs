@@ -1,0 +1,85 @@
+definitions:
+  repository.CreateDocumentParams:
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/docs:
+    get:
+      description: Get a list of all law documents
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of documents
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List all law documents
+      tags:
+      - documents
+    post:
+      consumes:
+      - application/json
+      description: Create a new law document with the provided details
+      parameters:
+      - description: Document details
+        in: body
+        name: document
+        required: true
+        schema:
+          $ref: '#/definitions/repository.CreateDocumentParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Document created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Failed to create document
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add a new law document
+      tags:
+      - documents
+  /api/v1/docs/:id:
+    put:
+      consumes:
+      - application/json
+      description: Update the metadata of a law document with the provided details
+      parameters:
+      - description: Document ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Document updated
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Failed to update document
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Manage metadata of a law document
+      tags:
+      - documents
+swagger: "2.0"

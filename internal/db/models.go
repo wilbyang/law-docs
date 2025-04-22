@@ -19,6 +19,7 @@ type Document struct {
 	Meta      models.Meta
 	Status    pgtype.Text
 	AuthorID  pgtype.Int4
+	FilePath  pgtype.Text
 }
 
 type User struct {

@@ -15,8 +15,9 @@ create table if not exists documents (
     created_at timestamp default current_timestamp,
     updated_at timestamp default current_timestamp,
     meta jsonb,
-    status text default 'draft',
-    author_id integer references users(id)
+    status text default 'draft' check (status in ('draft', 'pre-processed', 'auditing', 'audited')),
+    author_id integer references users(id),
+    file_path text
 );
 
 

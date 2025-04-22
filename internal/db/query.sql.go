@@ -19,15 +19,21 @@ INSERT INTO documents (
     doc_size,
     created_at,
     updated_at,
-    meta
+    meta,
+    status,
+    author_id,
+    file_path
 ) VALUES (
     $1,
     $2,
     $3,
     $4,
     $5,
-    $6
-) RETURNING id, title, content, doc_size, created_at, updated_at, meta, status, author_id
+    $6,
+    $7,
+    $8,
+    $9
+) RETURNING id, title, content, doc_size, created_at, updated_at, meta, status, author_id, file_path
 `
 
 type CreateDocumentParams struct {
@@ -37,6 +43,9 @@ type CreateDocumentParams struct {
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
 	Meta      models.Meta
+	Status    pgtype.Text
+	AuthorID  pgtype.Int4
+	FilePath  pgtype.Text
 }
 
 func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) (Document, error) {
@@ -47,6 +56,9 @@ func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) 
 		arg.CreatedAt,
 		arg.UpdatedAt,
 		arg.Meta,
+		arg.Status,
+		arg.AuthorID,
+		arg.FilePath,
 	)
 	var i Document
 	err := row.Scan(
@@ -59,6 +71,106 @@ func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) 
 		&i.Meta,
 		&i.Status,
 		&i.AuthorID,
+		&i.FilePath,
+	)
+	return i, err
+}
+
+const getDocumentById = `-- name: GetDocumentById :one
+SELECT id, title, content, doc_size, created_at, updated_at, meta, status, author_id, file_path FROM documents WHERE id = $1
+`
+
+func (q *Queries) GetDocumentById(ctx context.Context, id int32) (Document, error) {
+	row := q.db.QueryRow(ctx, getDocumentById, id)
+	var i Document
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Content,
+		&i.DocSize,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Meta,
+		&i.Status,
+		&i.AuthorID,
+		&i.FilePath,
+	)
+	return i, err
+}
+
+const getDocuments = `-- name: GetDocuments :many
+SELECT id, title, content, doc_size, created_at, updated_at, meta, status, author_id, file_path FROM documents WHERE author_id = $1
+`
+
+func (q *Queries) GetDocuments(ctx context.Context, authorID pgtype.Int4) ([]Document, error) {
+	rows, err := q.db.Query(ctx, getDocuments, authorID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Document
+	for rows.Next() {
+		var i Document
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Content,
+			&i.DocSize,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Meta,
+			&i.Status,
+			&i.AuthorID,
+			&i.FilePath,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateDocument = `-- name: UpdateDocument :one
+UPDATE documents SET title = $2, content = $3, doc_size = $4, updated_at = $5, meta = $6, status = $7, file_path = $8 WHERE id = $1 RETURNING id, title, content, doc_size, created_at, updated_at, meta, status, author_id, file_path
+`
+
+type UpdateDocumentParams struct {
+	ID        int32
+	Title     string
+	Content   string
+	DocSize   int32
+	UpdatedAt pgtype.Timestamp
+	Meta      models.Meta
+	Status    pgtype.Text
+	FilePath  pgtype.Text
+}
+
+func (q *Queries) UpdateDocument(ctx context.Context, arg UpdateDocumentParams) (Document, error) {
+	row := q.db.QueryRow(ctx, updateDocument,
+		arg.ID,
+		arg.Title,
+		arg.Content,
+		arg.DocSize,
+		arg.UpdatedAt,
+		arg.Meta,
+		arg.Status,
+		arg.FilePath,
+	)
+	var i Document
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Content,
+		&i.DocSize,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Meta,
+		&i.Status,
+		&i.AuthorID,
+		&i.FilePath,
 	)
 	return i, err
 }
