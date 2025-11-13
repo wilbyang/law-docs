@@ -1,5 +1,5 @@
 # Use the official Golang image as a base image
-FROM golang:1.24 as builder
+FROM golang:1.20 as builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o main ./cmd/server/main.go
+RUN go build -o main ./cmd/ws_rev/main.go
 
 # Use a minimal base image to package the compiled binary
 FROM alpine:latest
@@ -24,6 +24,9 @@ WORKDIR /root/
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
+
+# Expose port 8080 for the HTTP server
+EXPOSE 8080
 
 # Command to run the executable
 CMD ["./main"]

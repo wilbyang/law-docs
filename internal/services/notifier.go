@@ -65,6 +65,7 @@ func (notifier *Notifier) ReceiveMessage(processor func(message string) error) {
 		for _, message := range msg.Messages {
 
 			// set visibility timeout to 10 seconds
+			//TODO: read from config
 			_, err := notifier.SQSClient.ChangeMessageVisibility(context.TODO(), &sqs.ChangeMessageVisibilityInput{
 				QueueUrl:          aws.String(queueURL),
 				ReceiptHandle:     message.ReceiptHandle,
